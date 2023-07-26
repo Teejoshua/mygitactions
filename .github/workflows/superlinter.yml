@@ -1,0 +1,48 @@
+name: CI/CD Pipeline for PHP Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+
+    - name: Install composer dependencies
+      run: composer install
+
+    - name: Run PHPUnit tests
+      run: vendor/bin/phpunit
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+
+    - name: Install composer dependencies
+      run: composer install --no-dev
+
+    - name: Deploy to web server
+      run: |
+        # Add your deployment commands here, e.g., using rsync or scp to copy files to the server.
+        # Ensure you have SSH keys or other necessary credentials set up as secrets.
+
